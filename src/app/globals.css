@@ -1,26 +1,149 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F9FAFB; /* Fondo Claro - Gris Perla */
+  --foreground: #111827; /* Texto Principal - Gris Oscuro */
+  
+  /* Nueva paleta de colores */
+  --primary: #2563EB; /* Azul Profesional */
+  --secondary: #10B981; /* Verde Suave (acción segura) */
+  --accent: #F59E0B; /* Amarillo Mostaza Sutil */
+  --error: #EF4444; /* Rojo Sereno */
+  --background-light: #F9FAFB; /* Gris Perla */
+  --text-primary: #111827; /* Gris Oscuro */
+  --text-secondary: #6B7280; /* Gris medio para texto secundario */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-error: var(--error);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Removiendo el modo oscuro automático para mantener siempre el fondo claro */
+/* 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111827;
+    --foreground: #F9FAFB;
+  }
+}
+*/
+
+body {
+  background: #F9FAFB !important; /* Forzando el fondo claro */
+  color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Estilos personalizados para los toasts de Sonner */
+[data-sonner-toaster] {
+  --width: 356px;
+  --border-radius: 12px;
+}
+
+[data-sonner-toast] {
+  --border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+[data-sonner-toast][data-type="success"] {
+  --toast-bg: #f0fdf4;
+  --toast-border: #bbf7d0;
+  --toast-text: #166534;
+  --toast-description-text: #166534;
+  --toast-icon: #22c55e;
+}
+
+[data-sonner-toast][data-type="error"] {
+  --toast-bg: #fef2f2;
+  --toast-border: #fecaca;
+  --toast-text: #dc2626;
+  --toast-description-text: #dc2626;
+  --toast-icon: #ef4444;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  --toast-bg: #fffbeb;
+  --toast-border: #fed7aa;
+  --toast-text: #d97706;
+  --toast-description-text: #d97706;
+  --toast-icon: #f59e0b;
+}
+
+[data-sonner-toast][data-type="info"] {
+  --toast-bg: #eff6ff;
+  --toast-border: #bfdbfe;
+  --toast-text: #2563eb;
+  --toast-description-text: #2563eb;
+  --toast-icon: #3b82f6;
+}
+
+[data-sonner-toast][data-type="loading"] {
+  --toast-bg: #f8fafc;
+  --toast-border: #e2e8f0;
+  --toast-text: #475569;
+  --toast-description-text: #64748b;
+  --toast-icon: #64748b;
+}
+
+/* Animaciones personalizadas para los toasts */
+[data-sonner-toast] {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-sonner-toast][data-removed="true"] {
+  animation: slideOut 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Estilos para el botón de cerrar */
+[data-sonner-toast] [data-close-button] {
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive para móviles */
+@media (max-width: 640px) {
+  [data-sonner-toaster] {
+    --width: calc(100vw - 32px);
+    left: 16px !important;
+    right: 16px !important;
+    transform: none !important;
+  }
+  
+  [data-sonner-toaster][data-x-position="right"] {
+    right: 16px !important;
+  }
 }
