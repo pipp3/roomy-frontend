@@ -12,6 +12,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Avatar from '@/components/Avatar';
 import { useToast } from '@/hooks/useToast';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
+import DebugInfo from '@/components/DebugInfo';
 
 const DashboardPage: React.FC = () => {
   const { usuario } = useAuth();
@@ -421,6 +422,9 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Componente Debug flotante */}
+        <DebugInfo />
       </div>
     </ProtectedRoute>
   );
