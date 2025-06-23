@@ -38,9 +38,10 @@ export class AuthService {
       const user = response.data.user;
       //console.log('AuthService - Datos del usuario procesados:', user);
       return user;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Si es un error 401, significa que no está autenticado (normal)
-      if (error.response?.status === 401) {
+      const apiError = error as { response?: { status?: number } };
+      if (apiError.response?.status === 401) {
         //console.log('AuthService - Usuario no autenticado (401)');
         return null;
       }
@@ -54,7 +55,7 @@ export class AuthService {
     try {
       const user = await this.getCurrentUser();
       return user !== null;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

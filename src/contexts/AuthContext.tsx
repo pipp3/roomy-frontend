@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const currentUser = await AuthService.getCurrentUser();
       console.log('AuthContext - Usuario obtenido:', currentUser);
       setUsuario(currentUser);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('AuthContext - Error al obtener usuario:', error);
       // Los errores 401 ya se manejan en AuthService.getCurrentUser()
       setUsuario(null);

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem } from '@mui/material';
-import { UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import Avatar from '@/components/Avatar';
 import Link from 'next/link';

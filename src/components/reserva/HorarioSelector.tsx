@@ -21,19 +21,7 @@ const HorarioSelector: React.FC<HorarioSelectorProps> = ({
   onHoraFinChange,
   showHorarios
 }) => {
-  // Generar todos los horarios posibles (9:00 - 18:00 en intervalos de 30 min)
-  const generarTodosLosHorarios = (): string[] => {
-    const horarios: string[] = [];
-    for (let hora = 9; hora < 18; hora++) {
-      horarios.push(`${hora.toString().padStart(2, '0')}:00`);
-      if (hora < 17) { // No agregar :30 para las 17:30 porque terminaría a las 18:00
-        horarios.push(`${hora.toString().padStart(2, '0')}:30`);
-      }
-    }
-    return horarios;
-  };
 
-  const todosLosHorarios = generarTodosLosHorarios();
 
   const getHorariosFinDisponibles = (): string[] => {
     if (!horaInicio) return [];

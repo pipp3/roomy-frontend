@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { CalendarDaysIcon, ClockIcon, UserGroupIcon, PlusIcon, ArrowRightIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, ClockIcon, PlusIcon, ArrowRightIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { CalendarDaysIcon as CalendarSolidIcon, ClockIcon as ClockSolidIcon, UserGroupIcon as UserGroupSolidIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '@/contexts/AuthContext';
 import { ReservaService } from '@/services/reservaService';

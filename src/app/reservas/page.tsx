@@ -30,7 +30,7 @@ import { Reserva } from '@/types';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Loading from '@/components/Loading';
-import { parseISO, isAfter, isBefore, addDays } from 'date-fns';
+import { parseISO, isBefore } from 'date-fns';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
 
 const ReservasPage: React.FC = () => {
@@ -75,8 +75,17 @@ const ReservasPage: React.FC = () => {
       setReservas(prev => prev.filter(r => r._id !== deleteDialog.reserva?._id));
       
       setDeleteDialog({ open: false, reserva: null });
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al eliminar la reserva');
+    } catch (err: unknown) {
+      let errorMessage = 'Error al eliminar la reserva';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null) {
+        const apiError = err as { response?: { data?: { message?: string } } };
+        errorMessage = apiError.response?.data?.message || errorMessage;
+      }
+      
+      setError(errorMessage);
     } finally {
       setDeleting(false);
     }
@@ -89,7 +98,6 @@ const ReservasPage: React.FC = () => {
   const getEstadoReserva = (reserva: Reserva): 'pasada' | 'hoy' | 'proxima' => {
     const fechaReserva = parseISO(reserva.fecha);
     const hoy = new Date();
-    const manana = addDays(hoy, 1);
 
     if (isBefore(fechaReserva, hoy)) return 'pasada';
     if (fechaReserva.toDateString() === hoy.toDateString()) return 'hoy';

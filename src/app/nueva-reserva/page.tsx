@@ -176,8 +176,17 @@ const NuevaReservaPage: React.FC = () => {
       validarDatosFormulario();
       await crearReserva();
       handleRedireccionExitosa();
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Error al crear la reserva');
+    } catch (err: unknown) {
+      let errorMessage = 'Error al crear la reserva';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null) {
+        const apiError = err as { response?: { data?: { message?: string } } };
+        errorMessage = apiError.response?.data?.message || errorMessage;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

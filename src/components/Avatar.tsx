@@ -43,7 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({
     }
   }, [src, alt]);
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleImageError = () => {
     console.error('Error cargando imagen del avatar:', src);
     setImageError(true);
   };
@@ -57,6 +57,7 @@ const Avatar: React.FC<AvatarProps> = ({
   if (src && !imageError) {
     return (
       <div className={`${sizeClasses[size]} ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
