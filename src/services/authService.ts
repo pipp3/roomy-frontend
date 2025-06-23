@@ -1,6 +1,13 @@
 import api from '@/lib/api';
 import { Usuario } from '@/types';
 
+interface ApiError {
+  response?: {
+    status?: number;
+    data?: unknown;
+  };
+}
+
 export class AuthService {
   static async loginWithGoogle(): Promise<void> {
     // Para el login con Google OAuth, sí necesitamos usar window.location
@@ -64,7 +71,7 @@ export class AuthService {
       return user;
     } catch (error: unknown) {
       // Si es un error 401, significa que no está autenticado (normal)
-      const apiError = error as { response?: { status?: number; data?: any } };
+      const apiError = error as ApiError;
       
       console.log('❌ AuthService - Error al obtener usuario actual:', error);
       
