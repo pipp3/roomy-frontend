@@ -1,5 +1,5 @@
 export const CONFIG = {
-  API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   APP_NAME: 'RoomyApp',
   APP_DESCRIPTION: 'Sistema de reserva de salas de reuniones',
   
