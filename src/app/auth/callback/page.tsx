@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Loading from '@/components/Loading';
 
-const AuthCallbackPage: React.FC = () => {
+const AuthCallbackContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshUser } = useAuth();
@@ -37,6 +37,14 @@ const AuthCallbackPage: React.FC = () => {
   }, [searchParams, refreshUser, router]);
 
   return <Loading message="Completando autenticación..." />;
+};
+
+const AuthCallbackPage: React.FC = () => {
+  return (
+    <Suspense fallback={<Loading message="Cargando..." />}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
 };
 
 export default AuthCallbackPage; 
