@@ -27,16 +27,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
-  // Configuración de rewrites para la API
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/:path*`,
-      },
-    ];
-  },
 };
 
 export default nextConfig;
