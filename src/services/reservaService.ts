@@ -3,31 +3,31 @@ import { Reserva, DisponibilidadResponse, Sala } from '@/types';
 
 export class ReservaService {
   static async obtenerReservas(): Promise<Reserva[]> {
-    const response = await api.get('/reservas');
+    const response = await api.get('/api/reservas');
     return response.data;
   }
 
   static async obtenerMisReservas(): Promise<Reserva[]> {
-    const response = await api.get('/reservas/mis-reservas');
+    const response = await api.get('/api/reservas/mis-reservas');
     return response.data;
   }
 
   static async crearReserva(reserva: Omit<Reserva, '_id' | 'usuarioId' | 'createdAt' | 'updatedAt'>): Promise<Reserva> {
-    const response = await api.post('/reservas', reserva);
+    const response = await api.post('/api/reservas', reserva);
     return response.data;
   }
 
   static async actualizarReserva(id: string, reserva: Partial<Reserva>): Promise<Reserva> {
-    const response = await api.put(`/reservas/${id}`, reserva);
+    const response = await api.put(`/api/reservas/${id}`, reserva);
     return response.data;
   }
 
   static async eliminarReserva(id: string): Promise<void> {
-    await api.delete(`/reservas/${id}`);
+    await api.delete(`/api/reservas/${id}`);
   }
 
   static async obtenerDisponibilidad(sala: Sala, fecha: string): Promise<DisponibilidadResponse> {
-    const response = await api.get(`/reservas/disponibilidad?sala=${sala}&fecha=${fecha}`);
+    const response = await api.get(`/api/reservas/disponibilidad?sala=${sala}&fecha=${fecha}`);
     return response.data;
   }
 

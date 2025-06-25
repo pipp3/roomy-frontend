@@ -16,7 +16,6 @@ const AuthCallbackContent: React.FC = () => {
         const error = searchParams.get('error');
         
         if (error) {
-          console.error('Error en autenticación:', error);
           router.push('/login?error=' + error);
           return;
         }
@@ -28,7 +27,6 @@ const AuthCallbackContent: React.FC = () => {
         router.push('/');
         
       } catch (error) {
-        console.error('Error en callback de autenticación:', error);
         router.push('/login?error=callback_error');
       }
     };

@@ -54,7 +54,6 @@ const ReservasPage: React.FC = () => {
       setReservas(misReservas);
     } catch (err) {
       setError('Error al cargar las reservas');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
     }

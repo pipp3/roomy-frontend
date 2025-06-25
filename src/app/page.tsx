@@ -12,7 +12,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Avatar from '@/components/Avatar';
 import { useToast } from '@/hooks/useToast';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
-import DebugInfo from '@/components/DebugInfo';
+
 
 const DashboardPage: React.FC = () => {
   const { usuario } = useAuth();
@@ -51,12 +51,6 @@ const DashboardPage: React.FC = () => {
       
       toast.dismiss(loadingToast);
       
-      if (misReservas.length > 0) {
-        toast.success('¡Dashboard listo!', {
-          description: `Se encontraron ${misReservas.length} reserva${misReservas.length !== 1 ? 's' : ''}`,
-        });
-      }
-      
     } catch (err) {
       toast.error('Error al cargar las reservas', {
         description: 'Por favor, intenta refrescar la página',
@@ -70,7 +64,6 @@ const DashboardPage: React.FC = () => {
         },
       });
       setError('Error al cargar las reservas');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
       loadingInProgressRef.current = false;
@@ -423,8 +416,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Componente Debug flotante */}
-        <DebugInfo />
+
       </div>
     </ProtectedRoute>
   );

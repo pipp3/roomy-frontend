@@ -33,10 +33,7 @@ const Avatar: React.FC<AvatarProps> = ({
     xl: 'w-10 h-10'
   };
 
-  // Debug: log del src recibido
   React.useEffect(() => {
-    console.log('Avatar - src recibido:', src);
-    console.log('Avatar - alt:', alt);
     if (src) {
       setImageError(false);
       setImageLoaded(false);
@@ -44,12 +41,10 @@ const Avatar: React.FC<AvatarProps> = ({
   }, [src, alt]);
 
   const handleImageError = () => {
-    console.error('Error cargando imagen del avatar:', src);
     setImageError(true);
   };
 
   const handleImageLoad = () => {
-    console.log('Imagen del avatar cargada correctamente:', src);
     setImageLoaded(true);
   };
 

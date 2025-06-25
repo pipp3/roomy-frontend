@@ -24,17 +24,16 @@ export class AuthService {
       }
     }
     
-    window.location.href = `${apiUrl}/auth/google`;
+    window.location.href = `${apiUrl}/api/auth/google`;
   }
 
   static async logout(): Promise<void> {
     try {
-      await api.get('/auth/logout');
+      await api.get('/api/auth/logout');
     } catch (error) {
       toast.error('Error al cerrar sesión', {
         description: 'Intenta cerrar sesión nuevamente',
       });
-      console.error('❌ AuthService - Error durante logout:', error);
     }
     // No redirigimos aquí, dejamos que el componente maneje la redirección
     // usando el router de Next.js
@@ -45,9 +44,13 @@ export class AuthService {
     // Aunque no podemos leer cookies httpOnly, podemos verificar si hay alguna cookie
     if (typeof document === 'undefined') return false;
     
+    // En lugar de verificar todas las cookies, verificamos si hay indicios de autenticación
+    // Nota: No podemos leer la cookie 'token' porque es httpOnly (esto es correcto por seguridad)
+    // Esta función es solo una optimización para evitar requests innecesarios
     const hasCookies = document.cookie.length > 0;
     
     // Si hay cualquier cookie, es posible que haya una de autenticación
+    // La validación real siempre se hace en el backend
     return hasCookies;
   }
 
@@ -62,7 +65,7 @@ export class AuthService {
       
       // Hacemos una llamada al backend para verificar la autenticación
       // El token se envía automáticamente en la cookie httpOnly
-      const response = await api.get('/auth/me');
+      const response = await api.get('/api/auth/me');
       const user = response.data.user;
       return user;
     } catch (error: unknown) {
@@ -78,9 +81,6 @@ export class AuthService {
         toast.error('Servicio no disponible', {
           description: 'Verifica tu conexión a internet',
         });
-        //console.error('🚨 AuthService - ERROR 404: El endpoint /auth/me no existe o no es accesible');
-        //console.error('🔍 AuthService - Verifica que NEXT_PUBLIC_API_URL esté configurada correctamente');
-        //console.error('📍 AuthService - URL actual:', process.env.NEXT_PUBLIC_API_URL);
       } else if (apiError.response?.status && apiError.response.status >= 500) {
         toast.error('Error del servidor', {
           description: 'Intenta nuevamente en unos momentos',
@@ -92,12 +92,6 @@ export class AuthService {
         });
       }
       
-      // Para otros errores, los logueamos en consola pero no mostramos toast
-      console.error('❌ AuthService - Error detallado:', {
-        status: apiError.response?.status,
-        data: apiError.response?.data,
-        message: error instanceof Error ? error.message : 'Error desconocido'
-      });
       return null;
     }
   }
@@ -109,7 +103,6 @@ export class AuthService {
       return isAuthenticated;
     } catch (error) {
       // No mostrar toast aquí ya que getCurrentUser ya maneja los errores
-      console.error('❌ AuthService - Error al verificar estado de autenticación:', error);
       return false;
     }
   }
