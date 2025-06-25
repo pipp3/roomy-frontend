@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const currentUser = await AuthService.getCurrentUser();
       setUsuario(currentUser);
-    } catch (error: unknown) {
+    } catch {
       // Los errores 401 ya se manejan en AuthService.getCurrentUser()
       setUsuario(null);
     } finally {
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUsuario(null);
       // Usar el router de Next.js para redirigir
       router.push('/login');
-    } catch (error) {
+    } catch {
       // Incluso si hay error, limpiar el estado y redirigir
       setUsuario(null);
       router.push('/login');

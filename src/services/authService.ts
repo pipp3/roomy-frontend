@@ -30,7 +30,7 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       await api.get('/api/auth/logout');
-    } catch (error) {
+    } catch {
       toast.error('Error al cerrar sesión', {
         description: 'Intenta cerrar sesión nuevamente',
       });
@@ -101,7 +101,7 @@ export class AuthService {
       const user = await this.getCurrentUser();
       const isAuthenticated = user !== null;
       return isAuthenticated;
-    } catch (error) {
+    } catch {
       // No mostrar toast aquí ya que getCurrentUser ya maneja los errores
       return false;
     }

@@ -22,7 +22,7 @@ export const formatearFechaSinZonaHoraria = (
     
     // Si ya viene en formato ISO
     return format(parseISO(fechaString), formatoSalida, { locale: es });
-  } catch (error) {
+  } catch {
     return fechaString; // Devolver la fecha original si hay error
   }
 };

@@ -26,7 +26,7 @@ const AuthCallbackContent: React.FC = () => {
         await refreshUser();
         router.push('/');
         
-      } catch (error) {
+      } catch {
         router.push('/login?error=callback_error');
       }
     };

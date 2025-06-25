@@ -52,7 +52,7 @@ const ReservasPage: React.FC = () => {
       setLoading(true);
       const misReservas = await ReservaService.obtenerMisReservas();
       setReservas(misReservas);
-    } catch (err) {
+    } catch {
       setError('Error al cargar las reservas');
     } finally {
       setLoading(false);

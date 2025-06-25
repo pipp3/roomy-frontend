@@ -51,7 +51,7 @@ const DashboardPage: React.FC = () => {
       
       toast.dismiss(loadingToast);
       
-    } catch (err) {
+    } catch {
       toast.error('Error al cargar las reservas', {
         description: 'Por favor, intenta refrescar la página',
         action: {

@@ -86,7 +86,7 @@ const NuevaReservaPage: React.FC = () => {
       );
       setHorariosDisponibles(disponibilidad.horariosDisponibles);
       setShowHorarios(true);
-    } catch (err) {
+    } catch {
       setHorariosDisponibles([]);
       setShowHorarios(false);
     }
