@@ -11,20 +11,9 @@ interface ApiError {
 
 export class AuthService {
   static async loginWithGoogle(): Promise<void> {
-    // Para el login con Google OAuth, sí necesitamos usar window.location
-    // porque estamos redirigiendo a un servicio externo
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    
-    if (!apiUrl || apiUrl.includes('localhost')) {
-      // Solo mostrar en desarrollo
-      if (process.env.NODE_ENV === 'development') {
-        toast.warning('Modo desarrollo', {
-          description: 'Usando configuración local',
-        });
-      }
-    }
-    
-    window.location.href = `${apiUrl}/api/auth/google`;
+    // Usar URL absoluta para evitar problemas de redirección
+    const callbackUrl = encodeURIComponent(`${process.env.NEXT_PUBLIC_CLIENT_URL || 'https://roomyapp.duckdns.org'}/auth/callback`);
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google?redirect_uri=${callbackUrl}`;
   }
 
   static async logout(): Promise<void> {
