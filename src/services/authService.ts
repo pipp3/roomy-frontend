@@ -13,7 +13,7 @@ export class AuthService {
   static async loginWithGoogle(): Promise<void> {
     // Usar URL absoluta para evitar problemas de redirección
     const callbackUrl = encodeURIComponent(`${process.env.NEXT_PUBLIC_CLIENT_URL || 'https://roomyapp.duckdns.org'}/auth/callback`);
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google?redirect_uri=${callbackUrl}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google?redirect_uri=${callbackUrl}`;
   }
 
   static async logout(): Promise<void> {
