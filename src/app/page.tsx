@@ -7,8 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ReservaService } from '@/services/reservaService';
 import { Reserva } from '@/types';
 import Link from 'next/link';
-import Loading from '@/components/Loading';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import PrivateRoute from '@/components/PrivateRoute';
+import SkeletonLoader from '@/components/SkeletonLoader';
 import Avatar from '@/components/Avatar';
 import { useToast } from '@/hooks/useToast';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
@@ -150,14 +150,16 @@ const DashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <ProtectedRoute>
-        <Loading message="Cargando dashboard..." />
-      </ProtectedRoute>
+      <PrivateRoute>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <SkeletonLoader variant="dashboard" />
+        </div>
+      </PrivateRoute>
     );
   }
 
   return (
-    <ProtectedRoute>
+    <PrivateRoute>
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
           {/* Header Section */}
@@ -418,7 +420,7 @@ const DashboardPage: React.FC = () => {
         
 
       </div>
-    </ProtectedRoute>
+    </PrivateRoute>
   );
 };
 

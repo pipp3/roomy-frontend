@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React, { createContext, useContext, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Usuario } from '@/types';
 import { AuthService } from '@/services/authService';
 
@@ -30,68 +31,56 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasInitialized, setHasInitialized] = useState(false);
-  const pathname = usePathname();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
 
-  const refreshUser = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const currentUser = await AuthService.getCurrentUser();
-      setUsuario(currentUser);
-    } catch {
-      // Los errores 401 ya se manejan en AuthService.getCurrentUser()
-      setUsuario(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Solo inicializar la verificación de autenticación si:
-    // 1. No hemos inicializado aún
-    // 2. No estamos en la página de login (evita errores 401 innecesarios)
-    // 3. No estamos en páginas públicas
-    const isPublicPage = pathname === '/login';
+  // Memoizar el usuario para evitar re-renders innecesarios
+  const usuario: Usuario | null = useMemo(() => {
+    if (!session?.user) return null;
     
-    if (!hasInitialized && !isPublicPage) {
-      setHasInitialized(true);
-      refreshUser();
-    } else if (isPublicPage) {
-      // En páginas públicas, simplemente marcamos como no cargando
-      setIsLoading(false);
-      setUsuario(null);
-    }
-  }, [pathname, hasInitialized, refreshUser]);
+    return {
+      id: session.user.id,
+      email: session.user.email,
+      nombre: session.user.name,
+      avatar: session.user.image,
+      googleId: session.user.id
+    };
+  }, [session?.user]);
 
-  const login = useCallback(() => {
+  // Memoizar el estado de loading y autenticación
+  const authState = useMemo(() => ({
+    isLoading: status === 'loading',
+    isAuthenticated: status === 'authenticated' && !!session?.user,
+  }), [status, session?.user]);
+
+  const login = () => {
     AuthService.loginWithGoogle();
-  }, []);
+  };
 
-  const logout = useCallback(async () => {
-    try {
-      await AuthService.logout();
-      setUsuario(null);
-      // Usar el router de Next.js para redirigir
-      router.push('/login');
-    } catch {
-      // Incluso si hay error, limpiar el estado y redirigir
-      setUsuario(null);
-      router.push('/login');
-    }
-  }, [router]);
+  const logout = async () => {
+    await AuthService.logout();
+  };
 
-  const value: AuthContextType = {
+  const setUsuario = () => {
+    // Con NextAuth, no necesitamos setear manualmente el usuario
+    console.warn('setUsuario no es necesario con NextAuth.js');
+  };
+
+  const refreshUser = async () => {
+    // Actualizar la sesión de NextAuth
+    await update();
+  };
+
+  // Memoizar el valor del contexto para evitar re-renders
+  const contextValue = useMemo<AuthContextType>(() => ({
     usuario,
-    isLoading,
-    isAuthenticated: !!usuario,
+    isLoading: authState.isLoading,
+    isAuthenticated: authState.isAuthenticated,
     login,
     logout,
     setUsuario,
     refreshUser,
-  };
+  }), [usuario, authState.isLoading, authState.isAuthenticated]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }; 

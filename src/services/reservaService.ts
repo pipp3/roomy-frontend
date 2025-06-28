@@ -1,29 +1,74 @@
 import api from '@/lib/api';
 import { Reserva, DisponibilidadResponse, Sala } from '@/types';
+import { getSession } from 'next-auth/react';
 
 export class ReservaService {
+  // Función auxiliar para obtener el userId de MongoDB
+  static async obtenerUserId(): Promise<string> {
+    const session = await getSession();
+    if (!session?.user) {
+      throw new Error('Usuario no autenticado');
+    }
+
+    try {
+      const response = await api.get('/api/reservas/obtener-usuario', {
+        params: {
+          googleId: session.user.id,
+          email: session.user.email,
+          nombre: session.user.name,
+          avatar: session.user.image
+        }
+      });
+      
+      return response.data.userId;
+    } catch (error) {
+      console.error('Error al obtener userId:', error);
+      throw new Error('Error al obtener información del usuario');
+    }
+  }
+
   static async obtenerReservas(): Promise<Reserva[]> {
-    const response = await api.get('/api/reservas');
+    const userId = await this.obtenerUserId();
+    const response = await api.get(`/api/reservas?userId=${userId}`);
     return response.data;
   }
 
   static async obtenerMisReservas(): Promise<Reserva[]> {
-    const response = await api.get('/api/reservas/mis-reservas');
+    const userId = await this.obtenerUserId();
+    const response = await api.get(`/api/reservas/mis-reservas?userId=${userId}`);
     return response.data;
   }
 
   static async crearReserva(reserva: Omit<Reserva, '_id' | 'usuarioId' | 'createdAt' | 'updatedAt'>): Promise<Reserva> {
-    const response = await api.post('/api/reservas', reserva);
-    return response.data;
+    const userId = await this.obtenerUserId();
+    
+    const reservaConUserId = {
+      ...reserva,
+      userId: userId
+    };
+    
+    const response = await api.post('/api/reservas', reservaConUserId);
+    return response.data.reserva || response.data;
   }
 
   static async actualizarReserva(id: string, reserva: Partial<Reserva>): Promise<Reserva> {
-    const response = await api.put(`/api/reservas/${id}`, reserva);
-    return response.data;
+    const userId = await this.obtenerUserId();
+    
+    const reservaConUserId = {
+      ...reserva,
+      userId: userId
+    };
+    
+    const response = await api.put(`/api/reservas/${id}`, reservaConUserId);
+    return response.data.reserva || response.data;
   }
 
   static async eliminarReserva(id: string): Promise<void> {
-    await api.delete(`/api/reservas/${id}`);
+    const userId = await this.obtenerUserId();
+    
+    await api.delete(`/api/reservas/${id}`, {
+      data: { userId: userId }
+    });
   }
 
   static async obtenerDisponibilidad(sala: Sala, fecha: string): Promise<DisponibilidadResponse> {
