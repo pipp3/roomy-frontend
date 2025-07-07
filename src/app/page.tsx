@@ -21,6 +21,8 @@ const DashboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   
+
+  
   // Flags para evitar duplicaciones
   const welcomeShownRef = useRef(false);
   const loadingInProgressRef = useRef(false);
@@ -39,17 +41,16 @@ const DashboardPage: React.FC = () => {
     lastUsuarioIdRef.current = usuario.id;
 
     try {
-      if (!welcomeShownRef.current) {
+      // Mostrar bienvenida solo la primera vez en esta sesión del navegador
+      const welcomeShown = sessionStorage.getItem('welcomeShown');
+      if (!welcomeShown) {
         toast.auth.loginSuccess(usuario.nombre);
+        sessionStorage.setItem('welcomeShown', 'true');
         welcomeShownRef.current = true;
       }
-      
-      const loadingToast = toast.navigation.pageLoading('tus reservas');
 
       const misReservas = await ReservaService.obtenerMisReservas();
       setReservas(misReservas);
-      
-      toast.dismiss(loadingToast);
       
     } catch {
       toast.error('Error al cargar las reservas', {
@@ -86,15 +87,15 @@ const DashboardPage: React.FC = () => {
     .slice(0, 3);
 
   const handleNuevaReserva = () => {
-    toast.navigation.redirecting('nueva reserva');
+    // Función vacía - eliminada notificación de redirección
   };
 
   const handleGestionarReservas = () => {
-    toast.navigation.redirecting('gestión de reservas');
+    // Función vacía - eliminada notificación de redirección
   };
 
   const handleVerTodasReservas = () => {
-    toast.navigation.redirecting('todas las reservas');
+    // Función vacía - eliminada notificación de redirección
   };
 
   const handleStatsClick = (type: 'total' | 'today' | 'salas') => {
@@ -142,7 +143,7 @@ const DashboardPage: React.FC = () => {
       action: {
         label: 'Ver detalles',
         onClick: () => {
-          toast.navigation.redirecting('detalles de reserva');
+          // Función vacía - eliminada notificación de redirección
         },
       },
     });

@@ -46,13 +46,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     const sessionUser = session.user as ExtendedSessionUser;
     
-    return {
+    const usuarioObj = {
       id: sessionUser.id || '',
       email: sessionUser.email || '',
       nombre: sessionUser.name || '',
       avatar: sessionUser.image || undefined,
       googleId: sessionUser.id || ''
     };
+    
+    return usuarioObj;
   }, [session?.user]);
 
   // Memoizar el estado de loading y autenticación

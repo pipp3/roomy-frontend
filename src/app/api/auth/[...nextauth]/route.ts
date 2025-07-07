@@ -42,7 +42,12 @@ const handler = NextAuth({
         token.avatar = profile.picture
         token.email = profile.email
         token.name = profile.name
+        
+
       }
+      
+
+      
       return token
     },
     
@@ -55,6 +60,9 @@ const handler = NextAuth({
         session.user.name = token.name as string;
         session.user.image = token.avatar as string;
       }
+      
+
+      
       return session
     },
   },
