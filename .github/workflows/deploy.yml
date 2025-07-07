@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
-            cd /apps/roomy-app/roomy-frontend
+            cd /home/felipe/apps/roomy-app/roomy-frontend
             git reset --hard
             git clean -fd
             git pull origin main
