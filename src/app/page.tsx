@@ -7,7 +7,7 @@ import { useAuth } from '@/stores/authStore';
 import { useReservaStore, useReservas, useReservasLoading, useReservasError } from '@/stores/reservaStore';
 import { Reserva } from '@/types';
 import Link from 'next/link';
-import PrivateRoute from '@/components/PrivateRoute';
+import AuthGuard from '@/components/AuthGuard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import Avatar from '@/components/Avatar';
 import { useToast } from '@/hooks/useToast';
@@ -119,16 +119,16 @@ const DashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <PrivateRoute>
+      <AuthGuard>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <SkeletonLoader variant="dashboard" />
         </div>
-      </PrivateRoute>
+      </AuthGuard>
     );
   }
 
   return (
-    <PrivateRoute>
+    <AuthGuard>
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
           {/* Header Section */}
@@ -389,7 +389,7 @@ const DashboardPage: React.FC = () => {
         
 
       </div>
-    </PrivateRoute>
+    </AuthGuard>
   );
 };
 

@@ -27,7 +27,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Reserva } from '@/types';
 import Link from 'next/link';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import AuthGuard from '@/components/AuthGuard';
 import Loading from '@/components/Loading';
 import { parseISO, isBefore } from 'date-fns';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
@@ -99,9 +99,9 @@ const ReservasPage: React.FC = () => {
 
   if (loading) {
     return (
-      <ProtectedRoute>
+      <AuthGuard>
         <Loading message="Cargando reservas..." />
-      </ProtectedRoute>
+      </AuthGuard>
     );
   }
 
@@ -191,7 +191,7 @@ const ReservasPage: React.FC = () => {
   };
 
   return (
-    <ProtectedRoute>
+    <AuthGuard>
       <Container maxWidth="lg" className="py-8">
         <Box className="flex justify-between items-center mb-8">
           <Box>
@@ -304,7 +304,7 @@ const ReservasPage: React.FC = () => {
           </DialogActions>
         </Dialog>
       </Container>
-    </ProtectedRoute>
+    </AuthGuard>
   );
 };
 

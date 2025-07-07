@@ -20,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Sala } from '@/types';
 import { useRouter } from 'next/navigation';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import AuthGuard from '@/components/AuthGuard';
 import ReservaHeader from '@/components/reserva/ReservaHeader';
 import SalaSelector from '@/components/reserva/SalaSelector';
 import FechaSelector from '@/components/reserva/FechaSelector';
@@ -228,7 +228,7 @@ const NuevaReservaPage: React.FC = () => {
   );
 
   return (
-    <ProtectedRoute>
+    <AuthGuard>
       <Box className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <Container maxWidth="lg" className="py-12">
           <ReservaHeader />
@@ -307,7 +307,7 @@ const NuevaReservaPage: React.FC = () => {
           <ReservaInfo />
         </Container>
       </Box>
-    </ProtectedRoute>
+    </AuthGuard>
   );
 };
 

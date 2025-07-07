@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'sonner';
-// AuthProvider removido - ahora usamos Zustand
+import { useSession } from 'next-auth/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -44,18 +44,20 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const isLoginPage = pathname === '/login';
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated' && !!session?.user;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="flex flex-col min-h-screen">
-        {!isLoginPage && <Header />}
+        {!isLoginPage && isAuthenticated && <Header />}
         
         <main className={`flex-grow ${isLoginPage ? "min-h-screen" : "bg-background"}`}>
           {children}
         </main>
         
-        {!isLoginPage && <Footer />}
+        {!isLoginPage && isAuthenticated && <Footer />}
       </div>
       
       {/* Toaster de Sonner configurado con el tema de la aplicación */}
