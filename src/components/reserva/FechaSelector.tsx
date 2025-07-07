@@ -21,22 +21,11 @@ const FechaSelector: React.FC<FechaSelectorProps> = ({ value, onChange, minDate 
     });
   };
 
-  const formatDateForInput = (dateString: string): string => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
-  };
+
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     if (inputValue) {
-      // Convertir de YYYY-MM-DD a formato español para mostrar
-      const date = new Date(inputValue);
-      const formattedDate = date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
       onChange(inputValue); // Mantener formato YYYY-MM-DD para el backend
     } else {
       onChange('');

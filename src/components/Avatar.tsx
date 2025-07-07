@@ -12,7 +12,7 @@ const processGoogleImageUrl = (url: string): string => {
   // Opción 1: Usar un proxy de imágenes
   try {
     return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=400&h=400&fit=cover&output=webp`;
-  } catch (error) {
+  } catch {
     // Opción 2: Modificar la URL original de Google
     const baseUrl = url.split('=')[0];
     const timestamp = Date.now();
@@ -62,7 +62,7 @@ const Avatar: React.FC<AvatarProps> = ({
         new URL(processedSrc);
         setImageError(false);
         setImageLoaded(false);
-      } catch (error) {
+      } catch {
         setImageError(true);
         setImageLoaded(false);
       }
