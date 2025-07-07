@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -18,7 +18,6 @@ import {
   CheckIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
-import { ReservaService } from '@/services/reservaService';
 import { Sala } from '@/types';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -28,6 +27,7 @@ import FechaSelector from '@/components/reserva/FechaSelector';
 import HorarioSelector from '@/components/reserva/HorarioSelector';
 import ReservaInfo from '@/components/reserva/ReservaInfo';
 import { convertirFechaParaBackend } from '@/lib/dateUtils';
+import { useReservaStore, useFormData, useHorariosDisponibles, useShowHorarios } from '@/stores/reservaStore';
 
 interface FormData {
   sala: Sala | '';
@@ -45,81 +45,26 @@ const TIEMPO_REDIRECCION = 2000; // 2 segundos
 
 const NuevaReservaPage: React.FC = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({
-    sala: '',
-    fecha: '',
-    horaInicio: '',
-    horaFin: ''
-  });
-  const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [showHorarios, setShowHorarios] = useState(false);
+  const { 
+    formData, 
+    horariosDisponibles, 
+    showHorarios, 
+    loading, 
+    error, 
+    success,
+    actualizarFormData, 
+    crearReserva, 
+    limpiarMensajes,
+    setError,
+    setSuccess
+  } = useReservaStore();
 
   const getFechaMinima = (): string => {
     return new Date().toISOString().split('T')[0];
   };
 
-  const limpiarMensajes = (): void => {
-    setError(null);
-    setSuccess(null);
-  };
-
   const validarFormularioCompleto = (): boolean => {
     return !!(formData.sala && formData.fecha && formData.horaInicio && formData.horaFin);
-  };
-
-  const obtenerDisponibilidad = useCallback(async (): Promise<void> => {
-    if (!formData.sala || !formData.fecha) {
-      setHorariosDisponibles([]);
-      setShowHorarios(false);
-      return;
-    }
-
-    try {
-      const fechaFormateada = convertirFechaParaBackend(formData.fecha);
-      
-      const disponibilidad = await ReservaService.obtenerDisponibilidad(
-        formData.sala,
-        fechaFormateada
-      );
-      setHorariosDisponibles(disponibilidad.horariosDisponibles);
-      setShowHorarios(true);
-    } catch {
-      setHorariosDisponibles([]);
-      setShowHorarios(false);
-    }
-  }, [formData.sala, formData.fecha]);
-
-  useEffect(() => {
-    obtenerDisponibilidad();
-  }, [obtenerDisponibilidad]);
-
-  const handleInputChange = (field: keyof FormData, value: string): void => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Limpiar horarios dependientes cuando cambian sala o fecha
-    if (field === 'sala' || field === 'fecha') {
-      setFormData(prev => ({
-        ...prev,
-        horaInicio: '',
-        horaFin: ''
-      }));
-    }
-    
-    // Limpiar hora fin cuando cambia hora inicio
-    if (field === 'horaInicio') {
-      setFormData(prev => ({
-        ...prev,
-        horaFin: ''
-      }));
-    }
-
-    limpiarMensajes();
   };
 
   const validarDuracionReserva = (horaInicio: string, horaFin: string): boolean => {
@@ -148,17 +93,6 @@ const NuevaReservaPage: React.FC = () => {
     }
   };
 
-  const crearReserva = async (): Promise<void> => {
-    const fechaFormateada = convertirFechaParaBackend(formData.fecha);
-    
-    await ReservaService.crearReserva({
-      sala: formData.sala as Sala,
-      fecha: fechaFormateada,
-      horaInicio: formData.horaInicio,
-      horaFin: formData.horaFin
-    });
-  };
-
   const handleRedireccionExitosa = (): void => {
     setSuccess('¡Reserva creada exitosamente!');
     setTimeout(() => {
@@ -168,12 +102,19 @@ const NuevaReservaPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    setLoading(true);
     limpiarMensajes();
 
     try {
       validarDatosFormulario();
-      await crearReserva();
+      const fechaFormateada = convertirFechaParaBackend(formData.fecha);
+      
+      await crearReserva({
+        sala: formData.sala as Sala,
+        fecha: fechaFormateada,
+        horaInicio: formData.horaInicio,
+        horaFin: formData.horaFin
+      });
+      
       handleRedireccionExitosa();
     } catch (err: unknown) {
       let errorMessage = 'Error al crear la reserva';
@@ -186,8 +127,6 @@ const NuevaReservaPage: React.FC = () => {
       }
       
       setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -340,13 +279,13 @@ const NuevaReservaPage: React.FC = () => {
               <Grid container spacing={4}>
                 <SalaSelector 
                   value={formData.sala}
-                  onChange={(value) => handleInputChange('sala', value)}
+                  onChange={(value) => actualizarFormData('sala', value)}
                   salas={SALAS_DISPONIBLES}
                 />
                 
                 <FechaSelector 
                   value={formData.fecha}
-                  onChange={(value) => handleInputChange('fecha', value)}
+                  onChange={(value) => actualizarFormData('fecha', value)}
                   minDate={getFechaMinima()}
                 />
                 
@@ -354,8 +293,8 @@ const NuevaReservaPage: React.FC = () => {
                   horaInicio={formData.horaInicio}
                   horaFin={formData.horaFin}
                   horariosDisponibles={horariosDisponibles}
-                  onHoraInicioChange={(value) => handleInputChange('horaInicio', value)}
-                  onHoraFinChange={(value) => handleInputChange('horaFin', value)}
+                  onHoraInicioChange={(value) => actualizarFormData('horaInicio', value)}
+                  onHoraFinChange={(value) => actualizarFormData('horaFin', value)}
                   showHorarios={showHorarios}
                 />
                 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem } from '@mui/material';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/stores/authStore';
 import Avatar from '@/components/Avatar';
 import Link from 'next/link';
 

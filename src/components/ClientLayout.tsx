@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'sonner';
-import { AuthProvider } from '@/contexts/AuthContext';
+// AuthProvider removido - ahora usamos Zustand
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -48,34 +48,32 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <div className="flex flex-col min-h-screen">
-          {!isLoginPage && <Header />}
-          
-          <main className={`flex-grow ${isLoginPage ? "min-h-screen" : "bg-background"}`}>
-            {children}
-          </main>
-          
-          {!isLoginPage && <Footer />}
-        </div>
+      <div className="flex flex-col min-h-screen">
+        {!isLoginPage && <Header />}
         
-        {/* Toaster de Sonner configurado con el tema de la aplicación */}
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          duration={4000}
-          toastOptions={{
-            style: {
-              fontFamily: 'var(--font-geist-sans), Arial, sans-serif',
-            },
-            className: 'toast-custom',
-          }}
-          theme="light"
-          expand={false}
-          gap={8}
-        />
-      </AuthProvider>
+        <main className={`flex-grow ${isLoginPage ? "min-h-screen" : "bg-background"}`}>
+          {children}
+        </main>
+        
+        {!isLoginPage && <Footer />}
+      </div>
+      
+      {/* Toaster de Sonner configurado con el tema de la aplicación */}
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        duration={4000}
+        toastOptions={{
+          style: {
+            fontFamily: 'var(--font-geist-sans), Arial, sans-serif',
+          },
+          className: 'toast-custom',
+        }}
+        theme="light"
+        expand={false}
+        gap={8}
+      />
     </ThemeProvider>
   );
 };

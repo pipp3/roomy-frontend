@@ -25,42 +25,26 @@ import {
   ClockIcon,
   BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
-import { ReservaService } from '@/services/reservaService';
 import { Reserva } from '@/types';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Loading from '@/components/Loading';
 import { parseISO, isBefore } from 'date-fns';
 import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
+import { useReservaStore, useReservas, useReservasLoading, useReservasError } from '@/stores/reservaStore';
+import { useUIStore, useDeleteDialog } from '@/stores/uiStore';
 
 const ReservasPage: React.FC = () => {
-  const [reservas, setReservas] = useState<Reserva[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [deleteDialog, setDeleteDialog] = useState<{
-    open: boolean;
-    reserva: Reserva | null;
-  }>({ open: false, reserva: null });
+  const { reservas, loading, error, cargarReservas, eliminarReserva } = useReservaStore();
+  const { deleteDialog, setDeleteDialog } = useUIStore();
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     cargarReservas();
-  }, []);
-
-  const cargarReservas = async () => {
-    try {
-      setLoading(true);
-      const misReservas = await ReservaService.obtenerMisReservas();
-      setReservas(misReservas);
-    } catch {
-      setError('Error al cargar las reservas');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [cargarReservas]);
 
   const handleDeleteClick = (reserva: Reserva) => {
-    setDeleteDialog({ open: true, reserva });
+    setDeleteDialog(true, reserva);
   };
 
   const handleDeleteConfirm = async () => {
@@ -68,30 +52,17 @@ const ReservasPage: React.FC = () => {
 
     try {
       setDeleting(true);
-      await ReservaService.eliminarReserva(deleteDialog.reserva._id);
-      
-      // Actualizar la lista local
-      setReservas(prev => prev.filter(r => r._id !== deleteDialog.reserva?._id));
-      
-      setDeleteDialog({ open: false, reserva: null });
+      await eliminarReserva(deleteDialog.reserva._id);
+      setDeleteDialog(false);
     } catch (err: unknown) {
-      let errorMessage = 'Error al eliminar la reserva';
-      
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else if (typeof err === 'object' && err !== null) {
-        const apiError = err as { response?: { data?: { message?: string } } };
-        errorMessage = apiError.response?.data?.message || errorMessage;
-      }
-      
-      setError(errorMessage);
+      // El error ya se maneja en el store
     } finally {
       setDeleting(false);
     }
   };
 
   const handleDeleteCancel = () => {
-    setDeleteDialog({ open: false, reserva: null });
+    setDeleteDialog(false);
   };
 
   const getEstadoReserva = (reserva: Reserva): 'pasada' | 'hoy' | 'proxima' => {

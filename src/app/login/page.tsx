@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Container, Paper, Typography, Button, Box, Grid } from '@mui/material';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
 import { 

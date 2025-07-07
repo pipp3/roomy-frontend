@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CalendarDaysIcon, ClockIcon, PlusIcon, ArrowRightIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { CalendarDaysIcon as CalendarSolidIcon, ClockIcon as ClockSolidIcon, UserGroupIcon as UserGroupSolidIcon } from '@heroicons/react/24/solid';
-import { useAuth } from '@/contexts/AuthContext';
-import { ReservaService } from '@/services/reservaService';
+import { useAuth } from '@/stores/authStore';
+import { useReservaStore, useReservas, useReservasLoading, useReservasError } from '@/stores/reservaStore';
 import { Reserva } from '@/types';
 import Link from 'next/link';
 import PrivateRoute from '@/components/PrivateRoute';
@@ -16,64 +16,32 @@ import { formatearFechaSinZonaHoraria } from '@/lib/dateUtils';
 
 const DashboardPage: React.FC = () => {
   const { usuario } = useAuth();
-  const [reservas, setReservas] = useState<Reserva[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { reservas, loading, error, cargarReservas } = useReservaStore();
   const toast = useToast();
-  
-
   
   // Flags para evitar duplicaciones
   const welcomeShownRef = useRef(false);
-  const loadingInProgressRef = useRef(false);
   const lastUsuarioIdRef = useRef<string | null>(null);
 
-  const cargarReservas = useCallback(async () => {
-    if (!usuario || loadingInProgressRef.current) {
-      return;
-    }
+  useEffect(() => {
+    if (!usuario) return;
 
     if (lastUsuarioIdRef.current === usuario.id) {
       return;
     }
 
-    loadingInProgressRef.current = true;
     lastUsuarioIdRef.current = usuario.id;
 
-    try {
-      // Mostrar bienvenida solo la primera vez en esta sesión del navegador
-      const welcomeShown = sessionStorage.getItem('welcomeShown');
-      if (!welcomeShown) {
-        toast.auth.loginSuccess(usuario.nombre);
-        sessionStorage.setItem('welcomeShown', 'true');
-        welcomeShownRef.current = true;
-      }
-
-      const misReservas = await ReservaService.obtenerMisReservas();
-      setReservas(misReservas);
-      
-    } catch {
-      toast.error('Error al cargar las reservas', {
-        description: 'Por favor, intenta refrescar la página',
-        action: {
-          label: 'Reintentar',
-          onClick: () => {
-            loadingInProgressRef.current = false;
-            lastUsuarioIdRef.current = null;
-            cargarReservas();
-          },
-        },
-      });
-      setError('Error al cargar las reservas');
-    } finally {
-      setLoading(false);
-      loadingInProgressRef.current = false;
+    // Mostrar bienvenida solo la primera vez en esta sesión del navegador
+    const welcomeShown = sessionStorage.getItem('welcomeShown');
+    if (!welcomeShown) {
+      toast.auth.loginSuccess(usuario.nombre);
+      sessionStorage.setItem('welcomeShown', 'true');
+      welcomeShownRef.current = true;
     }
-  }, [usuario, toast]);
 
-  useEffect(() => {
     cargarReservas();
-  }, [cargarReservas]);
+  }, [usuario, cargarReservas, toast]);
 
   const reservasHoy = reservas.filter(reserva => {
     const fechaReserva = new Date(reserva.fecha);
