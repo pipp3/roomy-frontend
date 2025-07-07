@@ -21,6 +21,8 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
             cd /apps/roomy-app/roomy-frontend
+            git reset --hard
+            git clean -fd
             git pull origin main
             npm install
             npm run build
