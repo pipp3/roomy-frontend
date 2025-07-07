@@ -1,6 +1,5 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth/next"
 import GoogleProvider from "next-auth/providers/google"
-import { JWT } from "next-auth/jwt"
 
 const handler = NextAuth({
   providers: [
@@ -40,7 +39,7 @@ const handler = NextAuth({
       // Al iniciar sesión, agregar información adicional al token
       if (account && profile) {
         token.googleId = profile.sub
-        token.avatar = (profile as any).picture
+        token.avatar = profile.picture
         token.email = profile.email
         token.name = profile.name
       }
@@ -50,10 +49,11 @@ const handler = NextAuth({
     async session({ session, token }) {
       // Pasar información del token a la sesión
       if (token && session.user) {
-        session.user.id = token.googleId as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.image = token.avatar as string
+        // Ahora TypeScript conoce la estructura correcta
+        session.user.id = token.googleId as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.avatar as string;
       }
       return session
     },

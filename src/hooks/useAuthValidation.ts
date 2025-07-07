@@ -4,11 +4,19 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+// Tipo específico para el usuario autenticado
+interface AuthenticatedUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+}
+
 interface AuthValidationState {
   isLoading: boolean;
   isAuthenticated: boolean;
   isValidating: boolean;
-  user: any;
+  user: AuthenticatedUser | null;
 }
 
 export const useAuthValidation = (requireAuth = true) => {
@@ -51,7 +59,7 @@ export const useAuthValidation = (requireAuth = true) => {
           isLoading: false,
           isAuthenticated: true,
           isValidating: false,
-          user: session.user
+          user: session.user as AuthenticatedUser
         });
         return;
       }
@@ -62,7 +70,7 @@ export const useAuthValidation = (requireAuth = true) => {
           isLoading: false,
           isAuthenticated: status === 'authenticated',
           isValidating: false,
-          user: session?.user || null
+          user: session?.user ? (session.user as AuthenticatedUser) : null
         });
       }
     };

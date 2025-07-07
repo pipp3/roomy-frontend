@@ -1,8 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { Usuario } from '@/types';
 import { AuthService } from '@/services/authService';
 
@@ -30,20 +29,29 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+// Tipo para el usuario extendido de la sesión
+interface ExtendedSessionUser {
+  id: string;
+  email: string;
+  name: string;
+  image: string;
+}
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { data: session, status, update } = useSession();
-  const router = useRouter();
 
   // Memoizar el usuario para evitar re-renders innecesarios
   const usuario: Usuario | null = useMemo(() => {
     if (!session?.user) return null;
     
+    const sessionUser = session.user as ExtendedSessionUser;
+    
     return {
-      id: session.user.id,
-      email: session.user.email,
-      nombre: session.user.name,
-      avatar: session.user.image,
-      googleId: session.user.id
+      id: sessionUser.id || '',
+      email: sessionUser.email || '',
+      nombre: sessionUser.name || '',
+      avatar: sessionUser.image || undefined,
+      googleId: sessionUser.id || ''
     };
   }, [session?.user]);
 
@@ -66,10 +74,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     console.warn('setUsuario no es necesario con NextAuth.js');
   };
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     // Actualizar la sesión de NextAuth
     await update();
-  };
+  }, [update]);
 
   // Memoizar el valor del contexto para evitar re-renders
   const contextValue = useMemo<AuthContextType>(() => ({
@@ -80,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     setUsuario,
     refreshUser,
-  }), [usuario, authState.isLoading, authState.isAuthenticated]);
+  }), [usuario, authState.isLoading, authState.isAuthenticated, refreshUser]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }; 

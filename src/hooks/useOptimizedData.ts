@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseOptimizedDataOptions<T> {
   fetchFn: () => Promise<T>;
-  dependencies: any[];
+  dependencies: unknown[];
   cacheKey?: string;
   cacheDuration?: number; // en milisegundos
   debounceMs?: number;
@@ -21,7 +21,7 @@ interface UseOptimizedDataResult<T> {
 }
 
 // Cache simple en memoria
-const dataCache = new Map<string, { data: any; timestamp: number }>();
+const dataCache = new Map<string, { data: unknown; timestamp: number }>();
 
 export function useOptimizedData<T>({
   fetchFn,
@@ -52,10 +52,10 @@ export function useOptimizedData<T>({
       if (cacheKey) {
         const cached = dataCache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < cacheDuration) {
-          setData(cached.data);
+          setData(cached.data as T);
           setLoading(false);
           fetchInProgressRef.current = false;
-          onSuccess?.(cached.data);
+          onSuccess?.(cached.data as T);
           return;
         }
       }
